@@ -11,11 +11,8 @@ You can also add fonts so they can be easily downloaded and used by your devices
 ---
 
 > [!NOTE]
-> Only epub and PDF format are supported as of right now and there are currently no plans to support other formats.
-> 
-> While the progress sync is completely functional and the UI is pretty enough, the "managing" part still needs a bit more of love. That being said, I want to keep things simple.
-> 
-> There's no web reader, reading is done through the client app.
+> Check out the [roadmap](https://github.com/orgs/BookHeaven/discussions/2) for more information on the features that are currently planned for the future.
+>
 
 ## :sparkles: Features
 - :computer: **Modern and responsive UI**
