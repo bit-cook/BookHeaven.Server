@@ -1,30 +1,25 @@
 ﻿using System.Xml.Linq;
 using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Books;
+using BookHeaven.Server.Features.Api.Abstractions;
 using MediatR;
 
-namespace BookHeaven.Server.Features.Api.Endpoints;
+namespace BookHeaven.Server.Features.Api.Endpoints.Opds;
 
-public static class Opds
+public static class OpdsV1
 {
-    public static IServiceCollection AddOpds(this IServiceCollection services)
+    public class Endpoint : IOpdsEndpoint
     {
-        services.AddTransient<Endpoint>();
-        return services;
-    }
+        public void MapOpdsEndpoint(IEndpointRouteBuilder app)
+        {
+            app.MapGet("/v1", Handler)
+                .WithSummary("OPDS Catalog v1")
+                .WithTags("OPDS")
+                .WithDescription("Retrieves the book catalog in OPDS format (version 1).");
+        }
 
-    public static IApplicationBuilder MapOpds(this WebApplication app)
-    {
-        app.MapGet("/opds", Endpoint.Handler)
-            .WithSummary("OPDS Catalog")
-            .WithTags("OPDS")
-            .WithDescription("Retrieves the book catalog in OPDS format.");
-        return app;
-    }
-    
-    public class Endpoint
-    {
-        public static async Task<IResult> Handler(ISender sender)
+
+        private static async Task<IResult> Handler(ISender sender)
         {
             var getBooks = await sender.Send(new GetAllBooks.Query());
             if (getBooks.IsFailure)
@@ -59,7 +54,7 @@ public static class Opds
                                 new XAttribute("href", book.CoverUrl()),
                                 new XAttribute("type", "image/jpeg"),
                                 new XAttribute("rel", "http://opds-spec.org/image")),
-                            book.Series != null ? new XElement(dc + "series", book.Series) : null,
+                            book.Series != null ? new XElement(dc + "series", book.Series.Name) : null,
                             book.SeriesIndex.HasValue ? new XElement(dc + "series_index", book.SeriesIndex.Value) : null
                         )
                     )

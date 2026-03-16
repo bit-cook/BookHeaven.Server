@@ -9,18 +9,17 @@ using MudBlazor;
 using BookHeaven.Domain;
 using BookHeaven.Domain.Abstractions;
 using BookHeaven.Server.Features.Api.DependencyInjection;
-using BookHeaven.Server.Features.Api.Endpoints;
 using BookHeaven.Server.Features.Discovery.Services;
 using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Files.Services;
 using BookHeaven.Server.Features.Metadata.Abstractions;
 using BookHeaven.Server.Features.Metadata.DependencyInjection;
+using BookHeaven.Server.Features.Metadata.Services;
 using BookHeaven.Server.Features.Session.Abstractions;
 using BookHeaven.Server.Features.Session.Services;
 using BookHeaven.Server.Features.Settings.Abstractions;
 using BookHeaven.Server.Features.Settings.Services;
 using Microsoft.AspNetCore.DataProtection;
-using DuckDuckGoCoverProvider = BookHeaven.Server.Features.Metadata.Services.DuckDuckGoCoverProvider;
 
 var appDataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
 
@@ -75,7 +74,6 @@ builder.Services.AddHostedService<ImportFolderWatcher>();
 	
 // Add endpoints
 builder.Services.AddEndpoints(typeof(Program).Assembly);
-builder.Services.AddOpds();
 
 builder.Services.AddOpenApi();
 
@@ -151,7 +149,6 @@ app.Use(async (context, next) =>
 });
 
 app.MapEndpoints();
-app.MapOpds();
 
 if (app.Environment.IsDevelopment())
 {
