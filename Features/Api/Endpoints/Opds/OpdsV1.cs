@@ -40,6 +40,7 @@ public static class OpdsV1
             var feed = new XDocument(
                 new XElement(atom + "feed",
                     new XAttribute(XNamespace.Xmlns + "opds", opds),
+                    new XAttribute(XNamespace.Xmlns + "dc", dc),
                     new XElement(atom+"title", "BookHeaven Catalog"),
                     new XElement(atom+"id", "bookheaven-catalog"),
                     new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
