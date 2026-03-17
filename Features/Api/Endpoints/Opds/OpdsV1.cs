@@ -29,6 +29,9 @@ public static class OpdsV1
                 return Results.InternalServerError("Failed to retrieve books");
             }
             
+            var request = httpContextAccessor.HttpContext?.Request;
+            var baseUrl = request is not null ? $"{request.Scheme}://{request.Host}{request.PathBase}" : "";
+            
             var books = getBooks.Value;
             XNamespace opds = "http://opds-spec.org/2010/catalog";
             XNamespace atom = "http://www.w3.org/2005/Atom";
@@ -38,21 +41,21 @@ public static class OpdsV1
                 new XElement(atom + "feed",
                     new XAttribute(XNamespace.Xmlns + "opds", opds),
                     new XElement(atom+"title", "BookHeaven Catalog"),
-                    new XElement(atom+"id", "urn:bookheaven:catalog"),
+                    new XElement(atom+"id", "bookheaven-catalog"),
                     new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
                     books.Select(book =>
                         new XElement(atom+"entry",
                             new XElement(atom+"title", book.Title),
-                            new XElement(atom+"id", $"urn:bookheaven:book:{book.BookId}"),
+                            new XElement(atom+"id", $"urn:uuid:{book.BookId}"),
                             new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
                             new XElement(atom+"author", new XElement(atom+"name", book.Author?.Name ?? "Unknown")),
                             !string.IsNullOrEmpty(book.Description) ? new XElement(atom+"content", new XAttribute("type", "text"), book.Description) : null,
                             new XElement(atom+"link",
-                                new XAttribute("href", book.EbookUrl()),
+                                new XAttribute("href", baseUrl + book.EbookUrl()),
                                 new XAttribute("type", book.Format.GetMimeType()),
                                 new XAttribute("rel", "http://opds-spec.org/acquisition")),
                             new XElement(atom+"link",
-                                new XAttribute("href", book.CoverUrl()),
+                                new XAttribute("href", baseUrl + book.CoverUrl()),
                                 new XAttribute("type", "image/jpeg"),
                                 new XAttribute("rel", "http://opds-spec.org/image")),
                             book.Series != null ? new XElement(dc + "series", book.Series.Name) : null,
