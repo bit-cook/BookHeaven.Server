@@ -19,7 +19,9 @@ public static class OpdsV1
         }
 
 
-        private static async Task<IResult> Handler(ISender sender)
+        private static async Task<IResult> Handler(
+            ISender sender,
+            IHttpContextAccessor httpContextAccessor)
         {
             var getBooks = await sender.Send(new GetAllBooks.Query());
             if (getBooks.IsFailure)
@@ -33,9 +35,8 @@ public static class OpdsV1
             XNamespace dc = "http://purl.org/dc/terms/";
             
             var feed = new XDocument(
-                new XElement("feed",
+                new XElement(atom + "feed",
                     new XAttribute(XNamespace.Xmlns + "opds", opds),
-                    new XAttribute(XNamespace.Xmlns + "atom", atom),
                     new XElement(atom+"title", "BookHeaven Catalog"),
                     new XElement(atom+"id", "urn:bookheaven:catalog"),
                     new XElement(atom+"updated", DateTime.UtcNow.ToString("o")),
@@ -60,6 +61,10 @@ public static class OpdsV1
                     )
                 )
             );
+            
+            // Add last-modified response header
+            httpContextAccessor.HttpContext?.Response.Headers.LastModified = DateTime.UtcNow.ToString("R");
+            
             
             return Results.Content(feed.ToString(), "application/atom+xml");
         }

@@ -73,6 +73,7 @@ builder.Services.AddHostedService<UdpBroadcastServer>();
 builder.Services.AddHostedService<ImportFolderWatcher>();
 	
 // Add endpoints
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 builder.Services.AddOpenApi();
