@@ -2,16 +2,18 @@
 
 # Esta fase se usa cuando se ejecuta desde VS en modo rápido (valor predeterminado para la configuración de depuración)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER app
 WORKDIR /app
 EXPOSE 8080
 #EXPOSE 8081
 
 ARG GOOGLE_BOOKS_API_KEY
 ENV GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY
-
 ENV OPENAPI_GENERATE=false
 
+RUN mkdir -p /app/data &&  \
+    chown -R app:app /app/data
+
+USER app
 # Esta fase se usa para compilar el proyecto de servicio
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
