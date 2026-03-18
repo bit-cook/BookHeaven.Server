@@ -5,6 +5,7 @@ using BookHeaven.Domain.Extensions;
 using BookHeaven.Domain.Features.Authors;
 using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
+using BookHeaven.Domain.Helpers;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Features.Files.Abstractions;
@@ -52,6 +53,13 @@ public class EbookFileLoader(
 		if (!DomainGlobals.SupportedFormats.Contains(extension))
 		{
 			logger.LogWarning("Unsupported file extension: {Extension}", extension);
+			return null;
+		}
+		
+		var fileHash = await FileHelpers.GetPartialMd5HashAsync(path);
+		if(string.IsNullOrEmpty(fileHash))
+		{
+			logger.LogWarning("Failed to compute file hash for {Path}", path);
 			return null;
 		}
 		
@@ -117,11 +125,11 @@ public class EbookFileLoader(
 			ISBN13 = isbnIdentifiers.FirstOrDefault(x => x.Value.Length == 13)?.Value.Split(":").Last(),
 			ASIN = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "ASIN")?.Value.Split(":").Last(),
 			UUID = ebook.Identifiers.FirstOrDefault(x => x.Scheme == "UUID")?.Value.Split(":").Last(),
-			Format = (EbookFormat)ebook.Format
+			Format = (EbookFormat)ebook.Format,
+			FileHash = fileHash
 		};
 		
-		var tempCoverPath = Path.GetTempFileName();
-		await StoreCover(ebook.Cover, tempCoverPath);
+		var tempCoverPath = await GenerateCoverFile(ebook.Cover);
 		
 		var createBook = await sender.Send(new AddBook.Command(newBook, tempCoverPath, path));
 		if (createBook.IsFailure)
@@ -138,11 +146,13 @@ public class EbookFileLoader(
 		return createBook.Value;
 	}
 
-	private static async Task StoreCover(byte[]? image, string dest)
+	private static async Task<string> GenerateCoverFile(byte[]? image)
 	{
-		if (image == null) return;
+		if (image == null) return string.Empty;
+		var dest = Path.GetTempFileName();
 		var dir = Path.GetDirectoryName(dest);
 		if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
 		await File.WriteAllBytesAsync(dest, image);
+		return dest;
 	}
 }
