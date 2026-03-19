@@ -59,22 +59,21 @@ public class EbookFileLoader(
 		var fileHash = await FileHelpers.GetPartialMd5HashAsync(path);
 		if(string.IsNullOrEmpty(fileHash))
 		{
-			logger.LogWarning("Failed to compute file hash for {Path}", path);
+			logger.LogError("Failed to compute file hash for book");
+			return null;
+		}
+		
+		var getBook = await sender.Send(new GetBook.Query { Hash = fileHash });
+		if (getBook.IsSuccess)
+		{
+			logger.LogWarning("Book '{Path}' already exists in the database, ignoring", path);
 			return null;
 		}
 		
 		var ebookReader = ebookManagerProvider.GetReader((Format)EnumExtensions.GetFormatByExtension(extension));
 			
 		var ebook = await ebookReader.ReadMetadataAsync(path);
-			
-		var getBook = await sender.Send(new GetBook.Query(null, ebook.Title));
-			
-		if (getBook.IsSuccess)
-		{
-			logger.LogWarning("Book with title '{Title}' already exists in the database, ignoring", ebook.Title);
-			return null;
-		}
-			
+		
 		var getAuthor = await sender.Send(new GetAuthor.Query(new GetAuthor.Filter {Name = ebook.Author}));
 		if (getAuthor.IsFailure)
 		{
