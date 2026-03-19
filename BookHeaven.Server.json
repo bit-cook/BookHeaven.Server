@@ -331,32 +331,12 @@
             ],
             "format": "uuid"
           },
-          "author": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Author"
-              }
-            ]
-          },
           "seriesId": {
             "type": [
               "null",
               "string"
             ],
             "format": "uuid"
-          },
-          "series": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/Series"
-              }
-            ]
           },
           "seriesIndex": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
@@ -418,6 +398,29 @@
           },
           "format": {
             "$ref": "#/components/schemas/EbookFormat"
+          },
+          "fileHash": {
+            "type": "string"
+          },
+          "author": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Author"
+              }
+            ]
+          },
+          "series": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Series"
+              }
+            ]
           },
           "tags": {
             "type": "array",
