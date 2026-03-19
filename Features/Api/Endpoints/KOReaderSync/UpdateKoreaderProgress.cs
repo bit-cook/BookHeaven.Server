@@ -8,7 +8,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.KOReaderSync;
 
-public static class UpdateProgress
+public static class UpdateKoreaderProgress
 {
     private class KOReaderDocumentRequest
     {
@@ -64,10 +64,14 @@ public static class UpdateProgress
             {
                 var getProgress = await sender.Send(new GetBookProgressByProfile.Query(getBook.Value.BookId, getProfile.Value.ProfileId));
                 var progress = getProgress.Value;
-                
-                progress.StartDate ??= DateTime.Now;
+
+                progress.StartDate ??= DateTimeOffset.Now;
                 progress.Progress = request.percentage * 100;
-                progress.LastRead = DateTime.Now;
+                progress.LastRead = DateTimeOffset.Now;
+                if (progress.Progress >= 100)
+                {
+                    progress.EndDate = DateTimeOffset.Now;
+                }
                 
                 await sender.Send(new UpdateBookProgress.Command(progress));
             }
