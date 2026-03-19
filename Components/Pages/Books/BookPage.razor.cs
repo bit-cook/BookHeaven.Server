@@ -125,7 +125,7 @@ public partial class BookPage
 		_authorName = null;
 		_seriesName = null;
 			
-		var getBook = await Sender.Send(new GetBook.Query(Id));
+		var getBook = await Sender.Send(new GetBook.Query {BookId = Id});
 		if (getBook.IsFailure)
 		{
 			return;
