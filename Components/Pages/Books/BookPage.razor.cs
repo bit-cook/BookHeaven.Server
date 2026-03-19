@@ -7,13 +7,11 @@ using BookHeaven.Domain.Features.Books;
 using BookHeaven.Domain.Features.BookSeries;
 using BookHeaven.Domain.Features.BooksProgress;
 using BookHeaven.Domain.Features.Tags;
-using BookHeaven.Domain.Services;
 using BookHeaven.EbookManager;
 using BookHeaven.EbookManager.Entities;
 using BookHeaven.EbookManager.Enums;
 using BookHeaven.Server.Constants;
 using BookHeaven.Server.Components.Dialogs;
-using BookHeaven.Server.Features.Files.Abstractions;
 using BookHeaven.Server.Features.Metadata.DTOs;
 using BookHeaven.Server.Features.Session.Abstractions;
 using BookHeaven.Server.Features.Settings.Abstractions;
@@ -28,14 +26,12 @@ namespace BookHeaven.Server.Components.Pages.Books;
 public partial class BookPage
 {
 	[Inject] private ISender Sender { get; set; } = null!;
-	[Inject] private IEbookFileLoader EpubService { get; set; } = null!;
 	[Inject] private EbookManagerProvider EbookManagerProvider { get; set; } = null!;
 	[Inject] private NavigationManager NavigationManager { get; set; } = null!;
 	[Inject] private ISettingsManagerService SettingsManager { get; set; } = null!;
 	[Inject] private ISessionService SessionService { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
 	[Inject] private IAlertService AlertService { get; set; } = null!;
-	[Inject] private BookManager BookManager { get; set; } = null!;
 
 	[Parameter] public Guid Id { get; set; }
 
@@ -183,7 +179,7 @@ public partial class BookPage
 				             new Author
 				             {
 					             Name = _authorName
-				             };;
+				             };
 				_book.AuthorId = author.AuthorId;
 				_book.Author = author;
 			}
@@ -286,7 +282,7 @@ public partial class BookPage
 		};
 		var dialog = await DialogService.ShowAsync<FetchCoversDialog>(null, dialogParameters);
 		var result = await dialog.Result;
-		if (result?.Canceled == false && !string.IsNullOrWhiteSpace(result?.Data as string))
+		if (result?.Canceled == false && !string.IsNullOrWhiteSpace(result.Data as string))
 		{
 			_newCoverTempPath = result.Data as string;
 			StateHasChanged();
