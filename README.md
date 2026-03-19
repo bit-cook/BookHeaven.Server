@@ -10,7 +10,7 @@ You can also add fonts so they can be easily downloaded and used by your devices
 
 ---
 
-> [!NOTE]
+> [!IMPORTANT]
 > Check out the [roadmap](https://github.com/orgs/BookHeaven/discussions/2) for more information on the features that are currently planned for the future.
 >
 
@@ -33,15 +33,19 @@ You can also add fonts so they can be easily downloaded and used by your devices
 
 ## :rocket: Getting Started
 Setting the server up is pretty straightforward using containers.
-> [!NOTE]
+> [!IMPORTANT]
 > Check out the [starting guide](https://bookheaven.ggarrido.dev/getting-started) for more information.
 >
 
-> [!WARNING]
-> If github is giving you issues, you can use docker hub as well:
+> [!TIP]
+> If github doesn't work for you, you can use docker hub as well:
 > 
 > **docker.io/heasheartfire/bookheaven-server:latest**
-> 
+>
+
+> [!CAUTION]
+> Don't map the data folder to a network share. This project uses SQLite and it is known to have issues.
+>
 ### Docker Compose
 
 ```yaml
