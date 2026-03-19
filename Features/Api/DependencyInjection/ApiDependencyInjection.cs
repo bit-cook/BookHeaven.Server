@@ -11,7 +11,8 @@ public static class ApiDependencyInjection
     private static readonly List<(string basePath, Type interfaceType)> ApiGroups =
     [
         ("/api", typeof(IEndpoint)),
-        ("/opds", typeof(IOpdsEndpoint))
+        ("/opds", typeof(IOpdsEndpoint)),
+        ("", typeof(IKoreaderSyncEndpoint))
     ];
     
     public static IServiceCollection AddEndpoints(this IServiceCollection services, Assembly assembly)
@@ -37,7 +38,7 @@ public static class ApiDependencyInjection
     {
         foreach (var group in ApiGroups)
         {
-            var groupBuilder = app.MapGroup(group.basePath);
+            IEndpointRouteBuilder routeBuilder = !string.IsNullOrEmpty(group.basePath) ? app.MapGroup(group.basePath) : app;
             var mapMethodName = group.interfaceType.GetMethods().First(m => m.Name.StartsWith("Map")).Name;
             
             var endpoints = app.Services.GetServices(group.interfaceType);
@@ -47,7 +48,7 @@ public static class ApiDependencyInjection
                 var methodInfo = endpoint.GetType().GetMethod(mapMethodName);
                 if (methodInfo != null)
                 {
-                    methodInfo.Invoke(endpoint, [groupBuilder]);
+                    methodInfo.Invoke(endpoint, [routeBuilder]);
                 }
                 
             }
