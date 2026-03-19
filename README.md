@@ -44,7 +44,7 @@ Setting the server up is pretty straightforward using containers.
 >
 
 > [!CAUTION]
-> Don't map the data folder to a network share. This project uses SQLite and it is known to have issues.
+> Don't map the <code>/app/data</code> folder to a network share. This project uses SQLite and it is known to have issues.
 >
 ### Docker Compose
 
