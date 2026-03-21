@@ -8,7 +8,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.KOReaderSync;
 
-public static class UpdateKoreaderProgress
+public static class ApiSaveKoreaderProgress
 {
     private class KOReaderDocumentRequest
     {
@@ -53,12 +53,13 @@ public static class UpdateKoreaderProgress
                 Percentage = request.percentage,
                 Timestamp = DateTime.UtcNow
             };
+            logger.LogInformation("Saving KOReader progress with hash '{Document}' and profile '{ProfileName}'.", request.document, profileName);
             await sender.Send(new SaveKoreaderProgress.Command(koProgress));
             
             var getBook = await sender.Send(new GetBook.Query { Hash = request.document });
             if (getBook.IsFailure)
             {
-                logger.LogWarning("Book with hash {Hash} not found in database, can't update bookheaven progress.", request.document);
+                logger.LogWarning("Book with hash '{Hash}' not found in database, can't update bookheaven progress.", request.document);
             }
             else
             {

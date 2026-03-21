@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.KOReaderSync;
 
-public static class GetKoreaderProgress
+public static class ApiGetKoreaderProgress
 {
     public class Endpoint : IKoreaderSyncEndpoint
     {
@@ -32,7 +32,7 @@ public static class GetKoreaderProgress
                 return Results.Unauthorized();
             }
             
-            var getProgress = await sender.Send(new Domain.Features.KoreaderProgress.GetKoreaderProgress.Query(getProfile.Value.ProfileId, documentHash));
+            var getProgress = await sender.Send(new GetKoreaderProgress.Query(getProfile.Value.ProfileId, documentHash));
             if (getProgress.IsFailure)
             {
                 logger.LogWarning("Failed to get KOReader progress for document {DocumentHash}.", documentHash);

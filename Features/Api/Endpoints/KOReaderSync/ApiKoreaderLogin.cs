@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BookHeaven.Server.Features.Api.Endpoints.KOReaderSync;
 
-public static class Auth
+public static class ApiKoreaderLogin
 {
     public class Endpoint : IKoreaderSyncEndpoint
     {
