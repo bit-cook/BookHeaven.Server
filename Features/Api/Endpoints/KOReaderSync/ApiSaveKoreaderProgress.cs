@@ -53,7 +53,7 @@ public static class ApiSaveKoreaderProgress
                 Percentage = request.percentage,
                 Timestamp = DateTime.UtcNow
             };
-            logger.LogInformation("Saving KOReader progress with hash '{Document}' and profile '{ProfileName}'.", request.document, profileName);
+            logger.LogInformation("Saving KOReader progress with hash '{Document}' for profile '{ProfileName}'.", request.document, profileName);
             await sender.Send(new SaveKoreaderProgress.Command(koProgress));
             
             var getBook = await sender.Send(new GetBook.Query { Hash = request.document });
@@ -63,6 +63,7 @@ public static class ApiSaveKoreaderProgress
             }
             else
             {
+                logger.LogInformation("Saving BookHeaven progress for book '{BookTitle}'[{Hash}] and profile '{ProfileName}'.", getBook.Value.Title, request.document ,profileName);
                 var getProgress = await sender.Send(new GetBookProgressByProfile.Query(getBook.Value.BookId, getProfile.Value.ProfileId));
                 var progress = getProgress.Value;
 

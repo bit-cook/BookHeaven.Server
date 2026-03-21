@@ -35,7 +35,7 @@ public static class ApiGetKoreaderProgress
             var getProgress = await sender.Send(new GetKoreaderProgress.Query(getProfile.Value.ProfileId, documentHash));
             if (getProgress.IsFailure)
             {
-                logger.LogWarning("Failed to get KOReader progress for document {DocumentHash}.", documentHash);
+                logger.LogWarning("Failed to get KOReader progress for hash '{DocumentHash}'.", documentHash);
                 return Results.NotFound();
             }
             
