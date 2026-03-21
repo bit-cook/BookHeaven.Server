@@ -70,7 +70,7 @@ public static class UpdateKoreaderProgress
                 progress.LastRead = DateTimeOffset.Now;
                 if (progress.Progress >= 100)
                 {
-                    progress.EndDate = DateTimeOffset.Now;
+                    progress.EndDate ??= DateTimeOffset.Now;
                 }
                 
                 await sender.Send(new UpdateBookProgress.Command(progress));
